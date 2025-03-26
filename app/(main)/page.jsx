@@ -22,7 +22,7 @@ export default function Home() {
               alt="Menu icon"
             />
             <Image
-              className="opacity-70"
+              className="opacity-50"
               src={assets.chat_icon}
               alt="Chat icon"
             />
