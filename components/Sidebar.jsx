@@ -1,8 +1,13 @@
 import { assets } from "@/assets/assets";
 import Image from "next/image";
 import React from "react";
+import { useClerk, UserButton } from "@clerk/nextjs";
+import { useAppContext } from "@/context/AppContext";
 
 const Sidebar = ({ expand, setExpand }) => {
+  const { openSignIn } = useClerk();
+  const { user } = useAppContext();
+
   return (
     <div
       className={`flex flex-col justify-between bg-[#E6D4F7] pt-7 transition-all z-50 max-md:absolute max-md:h-screen ${
@@ -17,7 +22,7 @@ const Sidebar = ({ expand, setExpand }) => {
         >
           <Image
             className={expand ? "w-36" : "w-10"}
-            src={expand ? assets.logo_text : assets.logo_icon}
+            src={expand ? assets.logo_icon : assets.logo_icon}
             alt=""
           />
 
@@ -76,7 +81,7 @@ const Sidebar = ({ expand, setExpand }) => {
             expand ? "block" : "hidden"
           }`}
         >
-          <p className="my-1">Recents</p>
+          <p className="my-1 text-black">Recents</p>
           {/** Chat label */}
         </div>
       </div>
@@ -116,8 +121,22 @@ const Sidebar = ({ expand, setExpand }) => {
           )}
         </div>
 
-        <div className={`flex items-center ${expand ? 'hover:bg-white/10 rounded-lg' : 'justify-center w-full'} gap-3 text-white/60 text-sm p-2 mt-2 cursor-pointer`}>
-          <Image src={assets.profile_icon} alt="profile icon" className="w-7" />
+        <div
+          onClick={user ? null : openSignIn}
+          className={`flex items-center ${
+            expand ? "hover:bg-white/10 rounded-lg" : "justify-center w-full"
+          } gap-3 text-white/60 text-sm p-2 mt-2 cursor-pointer`}
+        >
+          {user ? (
+            <UserButton />
+          ) : (
+            <Image
+              src={assets.profile_icon}
+              alt="profile icon"
+              className="w-7"
+            />
+          )}
+
           {expand && <span>My profile</span>}
         </div>
       </div>
