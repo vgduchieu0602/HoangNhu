@@ -1,5 +1,6 @@
 "use client";
 import { assets } from "@/assets/assets";
+import Message from "@/components/Message";
 import PromptBox from "@/components/PromptBox";
 import Sidebar from "@/components/Sidebar";
 import Image from "next/image";
@@ -29,7 +30,7 @@ export default function Home() {
             />
           </div>
 
-          {message.length === 0 ? (
+          {message.length !== 0 ? (
             <>
               <div className="flex items-center gap-3">
                 <Image
@@ -42,9 +43,11 @@ export default function Home() {
               <p className="text-sm mt-2">How can I help you today?</p>
             </>
           ) : (
-            <div></div>
+            <div>
+              <Message role="ai" content="What is next js?" />
+            </div>
           )}
-          <PromptBox isLoading={isLoading} setIsLoading={setIsLoading}/>
+          <PromptBox isLoading={isLoading} setIsLoading={setIsLoading} />
           <p className="text-xs absolute bottom-1 text-gray-500">
             AI-generated, for reference only
           </p>
