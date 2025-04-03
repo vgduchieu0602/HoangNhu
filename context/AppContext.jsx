@@ -34,7 +34,7 @@ export const AppContextProvider = ({ children }) => {
         }
       );
 
-      fetchUsersChats;
+      fetchUsersChats();
     } catch (error) {
       toast.error(error.message);
     }
@@ -43,7 +43,7 @@ export const AppContextProvider = ({ children }) => {
   const fetchUsersChats = async () => {
     try {
       const token = await getToken();
-      const { data } = await axios.post("/api/chat/get", {
+      const { data } = await axios.get("/api/chat/get", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

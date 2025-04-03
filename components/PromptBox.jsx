@@ -7,7 +7,7 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 
 const PromptBox = ({ setIsLoading, isLoading }) => {
-  const [prompt, setPrompt] = useState("");
+  const [prompt, setPrompt] = useState('');
   const { user, chats, setChats, selectedChat, setSelectedChat } =
     useAppContext();
 

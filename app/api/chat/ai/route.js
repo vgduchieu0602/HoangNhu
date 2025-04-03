@@ -1,7 +1,7 @@
 export const maxDuration = 60;
 import connectDB from "@/config/db";
 import Chat from "@/models/Chat";
-import { getAuth } from "@clerk/nextjs/dist/types/server";
+import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 
@@ -25,7 +25,7 @@ export async function POST(req) {
     }
 
     //Find the chat document in the database based on userId and chatId
-    await connectDB()
+    await connectDB();
     const data = await Chat.findOne({ userId, _id: chatId });
 
     //Create a user message object
@@ -46,12 +46,12 @@ export async function POST(req) {
 
     const message = completion.choices[0].message;
 
-    message.timestamp = Date.now()
-    data.message.push(message)
-    data.save()
+    message.timestamp = Date.now();
+    data.message.push(message);
+    data.save();
 
-    return NextResponse.json({success: true, data: message})
+    return NextResponse.json({ success: true, data: message });
   } catch (error) {
-    return NextResponse.json({success: false, error: error.message})
+    return NextResponse.json({ success: false, error: error.message });
   }
 }
