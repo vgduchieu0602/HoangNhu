@@ -41,10 +41,16 @@ export async function POST(req) {
     const completion = await openai.chat.completions.create({
       messages: [{ role: "user", content: prompt }],
       model: "deepseek-chat",
-      store: true,
     });
 
     const message = completion.choices[0].message;
+
+    if (!message) {
+      return NextResponse.json({
+        success: false,
+        error: "Invalid API response",
+      });
+    }
 
     message.timestamp = Date.now();
     data.message.push(message);

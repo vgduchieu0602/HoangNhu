@@ -7,7 +7,7 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 
 const PromptBox = ({ setIsLoading, isLoading }) => {
-  const [prompt, setPrompt] = useState('');
+  const [prompt, setPrompt] = useState("");
   const { user, chats, setChats, selectedChat, setSelectedChat } =
     useAppContext();
 
@@ -20,6 +20,7 @@ const PromptBox = ({ setIsLoading, isLoading }) => {
   const sendPrompt = async (e) => {
     const promptCopy = prompt;
     try {
+      //prevent page reloading when we submit form data
       e.preventDefault();
       if (!user) {
         return toast.error("Login to send message");
@@ -60,11 +61,15 @@ const PromptBox = ({ setIsLoading, isLoading }) => {
         prompt,
       });
 
+      console.log("Chat: ",chats)
+      console
+      console.log("Data: ", data);
+
       if (data.success) {
         setChats((prevChats) =>
           prevChats.map((chat) =>
             chat._id === selectedChat._id
-              ? { ...chat, messages: [...chat.messages, data] }
+              ? { ...chat, messages: [...chat.messages, data.data] }
               : chat
           )
         );
