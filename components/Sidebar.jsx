@@ -5,6 +5,10 @@ import { useClerk, UserButton } from "@clerk/nextjs";
 import { useAppContext } from "@/context/AppContext";
 import ChatLabel from "./ChatLabel";
 
+import { Menu } from "lucide-react";
+import { PanelLeftOpen } from "lucide-react";
+import { PanelRightOpen } from "lucide-react";
+
 const Sidebar = ({ expand, setExpand }) => {
   const { openSignIn } = useClerk();
   const { user } = useAppContext();
@@ -23,25 +27,21 @@ const Sidebar = ({ expand, setExpand }) => {
           }`}
         >
           <Image
-            className={expand ? "w-36" : "w-10"}
-            src={expand ? assets.logo_icon : assets.logo_icon}
+            className={expand ? "w-30 mr-8" : "w-10"}
+            src={assets.logo_icon}
             alt=""
           />
 
           <div
             onClick={() => (expand ? setExpand(false) : setExpand(true))}
-            className="group relative flex items-center justify-center hover:bg-gray-500/20 transition-all duration-300 h-9 w-9 aspect-square rounded-lg cursor-pointer"
+            className="group relative flex items-center justify-center hover:bg-primary transition-all duration-300 h-9 w-9 aspect-square rounded-lg cursor-pointer"
           >
-            <Image
-              src={assets.menu_icon}
-              alt="Menu icon"
-              className="md:hidden"
-            />
-            <Image
-              src={expand ? assets.sidebar_close_icon : assets.sidebar_icon}
-              alt="Menu icon"
-              className="hidden md:block w-7"
-            />
+            <Menu className="md:hidden text-white h-7 w-7" />
+            {expand ? (
+              <PanelRightOpen className="hidden md:block w-7 text-white" />
+            ) : (
+              <PanelLeftOpen className="hidden md:block w-7 text-white" />
+            )}
             <div
               className={`absolute w-max ${
                 expand ? "left-1/2 -translate-x-1/2 top-12" : "-top-12 left-0"
@@ -84,7 +84,7 @@ const Sidebar = ({ expand, setExpand }) => {
           }`}
         >
           <p className="my-1 text-black">Recents</p>
-          <ChatLabel openMenu={openMenu} setOpenMenu={setOpenMenu}/>
+          <ChatLabel openMenu={openMenu} setOpenMenu={setOpenMenu} />
         </div>
       </div>
 
