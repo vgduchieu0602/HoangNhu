@@ -48,6 +48,7 @@ export const AppContextProvider = ({ children }) => {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log("Data: ", data);
       if (data.success) {
         console.log(data.data);
         setChats(data.data);

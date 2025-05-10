@@ -17,6 +17,7 @@ const PromptBox = ({ setIsLoading, isLoading }) => {
       sendPrompt(e);
     }
   };
+
   const sendPrompt = async (e) => {
     const promptCopy = prompt;
     try {
@@ -61,10 +62,6 @@ const PromptBox = ({ setIsLoading, isLoading }) => {
         prompt,
       });
 
-      console.log("Chat: ",chats)
-      console
-      console.log("Data: ", data);
-
       if (data.success) {
         setChats((prevChats) =>
           prevChats.map((chat) =>
@@ -91,7 +88,7 @@ const PromptBox = ({ setIsLoading, isLoading }) => {
           setTimeout(() => {
             assistantMessage.content = messageTokens.slice(0, i + 1).join(" ");
             setSelectedChat((prev) => {
-              const updateMessages = [
+              const updatedMessages = [
                 ...prev.messages.slice(0, -1),
                 assistantMessage,
               ];

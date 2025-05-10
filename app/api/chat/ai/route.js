@@ -32,10 +32,10 @@ export async function POST(req) {
     const userPrompt = {
       role: "user",
       content: prompt,
-      timestamp: Date.now(),
+      timestamps: Date.now(),
     };
 
-    data.message.push(userPrompt);
+    data.messages.push(userPrompt);
 
     //Call the deepseek API to get a chat completion
     const completion = await openai.chat.completions.create({
@@ -53,7 +53,7 @@ export async function POST(req) {
     }
 
     message.timestamp = Date.now();
-    data.message.push(message);
+    data.messages.push(message);
     data.save();
 
     return NextResponse.json({ success: true, data: message });
