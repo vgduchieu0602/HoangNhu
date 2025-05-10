@@ -36,7 +36,7 @@ const PromptBox = ({ setIsLoading, isLoading }) => {
       const userPrompt = {
         role: "user",
         content: prompt,
-        timestamp: Date.now(),
+        timestamps: Date.now(),
       };
 
       //saving user prompt in chats array
@@ -76,7 +76,7 @@ const PromptBox = ({ setIsLoading, isLoading }) => {
         let assistantMessage = {
           role: "assistant",
           content: "",
-          timestamp: Date.now(),
+          timestamps: Date.now(),
         };
 
         setSelectedChat((prev) => ({
@@ -92,7 +92,7 @@ const PromptBox = ({ setIsLoading, isLoading }) => {
                 ...prev.messages.slice(0, -1),
                 assistantMessage,
               ];
-              return { ...prev, message: updatedMessages };
+              return { ...prev, messages: updatedMessages };
             });
           }, i * 100);
         }
@@ -112,7 +112,7 @@ const PromptBox = ({ setIsLoading, isLoading }) => {
     <form
       onSubmit={sendPrompt}
       className={`w-full ${
-        false ? "max-w-3xl" : "max-w-2xl"
+        selectedChat?.messages.length > 0 ? "max-w-3xl" : "max-w-2xl"
       } bg-[#404045] p-4 rounded-3xl mt-4 transition-all`}
     >
       <textarea
