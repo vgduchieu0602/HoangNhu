@@ -52,7 +52,7 @@ export async function POST(req) {
       });
     }
 
-    message.timestamp = Date.now();
+    message.timestamps = Date.now();
     data.messages.push(message);
     data.save();
 
