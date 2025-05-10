@@ -11,7 +11,7 @@ import { MessagesSquare } from "lucide-react";
 
 export default function Home() {
   const [expand, setExpand] = useState(false);
-  const [message, setMessage] = useState([]);
+  const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   return (
@@ -33,7 +33,7 @@ export default function Home() {
             />
           </div>
 
-          {message.length === 0 ? (
+          {messages.length === 0 ? (
             <>
               <div className="flex items-center gap-3">
                 <Image
