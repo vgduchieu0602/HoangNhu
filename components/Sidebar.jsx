@@ -83,8 +83,9 @@ const Sidebar = ({ expand, setExpand }) => {
         >
           <p className="my-1 text-black">Recents</p>
           {/* === ChatLabel === */}s
-          {chats.map((chat) => (
+          {chats.map((chat, index) => (
             <ChatLabel
+              key={index}
               name={chat.name}
               id={chat._id}
               openMenu={openMenu}
