@@ -10,6 +10,8 @@ import { PanelLeftOpen } from "lucide-react";
 import { PanelRightOpen } from "lucide-react";
 import { Smartphone } from "lucide-react";
 
+import { ScrollArea } from "@/components/ui/scroll-area";
+
 const Sidebar = ({ expand, setExpand }) => {
   const { openSignIn } = useClerk();
   const { user, chats, createNewChat } = useAppContext();
@@ -82,16 +84,18 @@ const Sidebar = ({ expand, setExpand }) => {
           }`}
         >
           <p className="my-1 text-black">Recents</p>
-          {/* === ChatLabel === */}s
-          {chats.map((chat, index) => (
-            <ChatLabel
-              key={index}
-              name={chat.name}
-              id={chat._id}
-              openMenu={openMenu}
-              setOpenMenu={setOpenMenu}
-            />
-          ))}
+          {/* === ChatLabel === */}
+          <ScrollArea className="h-90 w-58 p-2">
+            {chats.map((chat, index) => (
+              <ChatLabel
+                key={index}
+                name={chat.name}
+                id={chat._id}
+                openMenu={openMenu}
+                setOpenMenu={setOpenMenu}
+              />
+            ))}
+          </ScrollArea>
         </div>
       </div>
 

@@ -17,6 +17,7 @@ export const AppContextProvider = ({ children }) => {
 
   const [chats, setChats] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
+  const [apiVersion, setApiVersion] = useState("classic");
 
   const createNewChat = async () => {
     try {
@@ -89,6 +90,8 @@ export const AppContextProvider = ({ children }) => {
     setSelectedChat,
     fetchUsersChats,
     createNewChat,
+    apiVersion,
+    setApiVersion,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

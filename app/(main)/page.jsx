@@ -3,6 +3,7 @@ import { assets } from "@/assets/assets";
 import Message from "@/components/Message";
 import PromptBox from "@/components/PromptBox";
 import Sidebar from "@/components/Sidebar";
+import SelectVersion from "@/components/SelectVersion";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
@@ -53,6 +54,10 @@ export default function Home() {
             />
           </div>
 
+          {/* ===== Select Version ===== */}
+          <SelectVersion expand={expand} />
+
+          {/* ===== Messages ===== */}
           {messages.length === 0 ? (
             <>
               <div className="flex items-center gap-3">
@@ -93,10 +98,10 @@ export default function Home() {
             </div>
           )}
 
-          {/** === PROMPT BOX === */}
+          {/** ===== PROMPT BOX ===== */}
           <PromptBox isLoading={isLoading} setIsLoading={setIsLoading} />
 
-          {/** === FOOTER === */}
+          {/** ===== FOOTER ===== */}
           <p className="text-xs absolute bottom-1 text-gray-500">
             AI-generated, for reference only
           </p>
