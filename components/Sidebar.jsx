@@ -85,16 +85,18 @@ const Sidebar = ({ expand, setExpand }) => {
         >
           <p className="my-1 text-black">Recents</p>
           {/* === ChatLabel === */}
-          <ScrollArea className="h-90 w-58 p-2">
-            {chats.map((chat, index) => (
-              <ChatLabel
-                key={index}
-                name={chat.name}
-                id={chat._id}
-                openMenu={openMenu}
-                setOpenMenu={setOpenMenu}
-              />
-            ))}
+          <ScrollArea className="h-134 w-58 p-2 relative">
+            <div className="space-y-1">
+              {chats.map((chat, index) => (
+                <ChatLabel
+                  key={index}
+                  name={chat.name}
+                  id={chat._id}
+                  openMenu={openMenu}
+                  setOpenMenu={setOpenMenu}
+                />
+              ))}
+            </div>
           </ScrollArea>
         </div>
       </div>
