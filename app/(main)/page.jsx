@@ -7,6 +7,7 @@ import SelectVersion from "@/components/SelectVersion";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useChat } from "ai/react";
+import { Mesage } from "ai";
 
 import { Menu } from "lucide-react";
 import { MessagesSquare } from "lucide-react";
