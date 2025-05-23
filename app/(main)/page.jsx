@@ -14,9 +14,7 @@ import Message from "@/components/Message";
 import PromptBox from "@/components/PromptBox";
 import Sidebar from "@/components/Sidebar";
 import SelectVersion from "@/components/SelectVersion";
-import Bubble from "@/components/Bubble";
 import PromptSuggestionsRow from "@/components/PromptSuggestionsRow";
-import LoadingBubble from "@/components/LoadingBubble";
 
 import { Menu } from "lucide-react";
 import { MessagesSquare } from "lucide-react";
@@ -29,6 +27,11 @@ export default function Home() {
 
   const { selectedChat } = useAppContext();
   const containerRef = useRef(null);
+
+  const handlePromptClick = (promptText) => {
+    setIsLoading(true);
+    setMessages([...messages, { role: "user", content: promptText }]);
+  };
 
   useEffect(() => {
     if (selectedChat) {
@@ -68,7 +71,7 @@ export default function Home() {
           <SelectVersion expand={expand} />
 
           {/* ===== Messages ===== */}
-          {messages.length === 0 ? (
+          {(messages.length === 0) | !messages ? (
             <>
               <div className="flex items-center gap-3">
                 <Image
@@ -76,12 +79,17 @@ export default function Home() {
                   alt="Logo icon"
                   className="h-7 w-7"
                 />
-                <p className="text-2xl font-medium">Hi, I'm Nuu</p>
+                <p className="text-2xl font-medium">
+                  Xin chào, Tôi là trợ lý Nuu
+                </p>
               </div>
-              <p className="text-sm mt-2">How can I help you today?</p>
+              <p className="text-base mt-2 mb-4">
+                Hôm nay tôi có thể giúp gì cho bạn?
+              </p>
               {/** Suggestions Prompt */}
-              {console.log(apiVersion)}
-              {apiVersion === "premium" && <PromptSuggestionsRow />}
+              {apiVersion === "classic" && (
+                <PromptSuggestionsRow onPromptClick={handlePromptClick} />
+              )}
             </>
           ) : (
             <div
