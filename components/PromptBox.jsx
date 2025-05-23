@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 
 const PromptBox = ({ setIsLoading, isLoading }) => {
   const [prompt, setPrompt] = useState("");
-  const { user, chats, setChats, selectedChat, setSelectedChat } =
+  const { user, chats, setChats, selectedChat, setSelectedChat, apiVersion } =
     useAppContext();
 
   const handleKeyDown = (e) => {
@@ -57,10 +57,13 @@ const PromptBox = ({ setIsLoading, isLoading }) => {
         messages: [...prev.messages, userPrompt],
       }));
 
-      const { data } = await axios.post("/api/chat/ai", {
-        chatId: selectedChat._id,
-        prompt,
-      });
+      const { data } = await axios.post(
+        `/api/chat/${apiVersion === "classic" ? "classic" : "ai"}`,
+        {
+          chatId: selectedChat._id,
+          prompt,
+        }
+      );
 
       if (data.success) {
         setChats((prevChats) =>
