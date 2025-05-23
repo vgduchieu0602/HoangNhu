@@ -18,6 +18,7 @@ export const AppContextProvider = ({ children }) => {
   const [chats, setChats] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
   const [apiVersion, setApiVersion] = useState("classic");
+  const [isLoading, setIsLoading] = useState(true);
 
   const createNewChat = async () => {
     try {
@@ -35,7 +36,7 @@ export const AppContextProvider = ({ children }) => {
         }
       );
 
-      fetchUsersChats();
+      await fetchUsersChats();
     } catch (error) {
       toast.error(error.message);
     }
@@ -43,42 +44,45 @@ export const AppContextProvider = ({ children }) => {
 
   const fetchUsersChats = async () => {
     try {
+      setIsLoading(true);
       const token = await getToken();
       const { data } = await axios.get("/api/chat/get", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Data: ", data);
+
       if (data.success) {
-        console.log(data.data);
         setChats(data.data);
 
         //if the user has no chats, create one
         if (data.data.length === 0) {
           await createNewChat();
-          return fetchUsersChats();
+          return;
         } else {
           //sort chats by updated date
-          data.data.sort(
+          const sortedChats = [...data.data].sort(
             (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
           );
 
           //set recently updated chat as selected chat
-          setSelectedChat(data.data[0]);
-          console.log(data.data[0]);
+          setSelectedChat(sortedChats[0]);
         }
       } else {
         toast.error(data.message);
       }
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     if (user) {
       fetchUsersChats();
+    } else {
+      setIsLoading(false);
     }
   }, [user]);
 
@@ -92,6 +96,7 @@ export const AppContextProvider = ({ children }) => {
     createNewChat,
     apiVersion,
     setApiVersion,
+    isLoading,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
