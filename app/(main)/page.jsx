@@ -1,23 +1,31 @@
 "use client";
-import { assets } from "@/assets/assets";
-import Message from "@/components/Message";
-import PromptBox from "@/components/PromptBox";
-import Sidebar from "@/components/Sidebar";
-import SelectVersion from "@/components/SelectVersion";
-import Image from "next/image";
+
 import { useEffect, useRef, useState } from "react";
 import { useChat } from "ai/react";
 import { Mesage } from "ai";
 
-import { Menu } from "lucide-react";
-import { MessagesSquare } from "lucide-react";
+import Image from "next/image";
 
 import { useAppContext } from "@/context/AppContext";
+
+import { assets } from "@/assets/assets";
+
+import Message from "@/components/Message";
+import PromptBox from "@/components/PromptBox";
+import Sidebar from "@/components/Sidebar";
+import SelectVersion from "@/components/SelectVersion";
+import Bubble from "@/components/Bubble";
+import PromptSuggestionsRow from "@/components/PromptSuggestionsRow";
+import LoadingBubble from "@/components/LoadingBubble";
+
+import { Menu } from "lucide-react";
+import { MessagesSquare } from "lucide-react";
 
 export default function Home() {
   const [expand, setExpand] = useState(false);
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { apiVersion, setApiVersion } = useAppContext();
 
   const { selectedChat } = useAppContext();
   const containerRef = useRef(null);
@@ -71,6 +79,9 @@ export default function Home() {
                 <p className="text-2xl font-medium">Hi, I'm Nuu</p>
               </div>
               <p className="text-sm mt-2">How can I help you today?</p>
+              {/** Suggestions Prompt */}
+              {console.log(apiVersion)}
+              {apiVersion === "premium" && <PromptSuggestionsRow />}
             </>
           ) : (
             <div
