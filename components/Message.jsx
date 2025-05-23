@@ -1,13 +1,18 @@
 import { assets } from "@/assets/assets";
 import Image from "next/image";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Markdown from "react-markdown";
 import Prism from "prismjs";
 import toast from "react-hot-toast";
 
 const Message = ({ role, content }) => {
+  const [isMounted, setIsMounted] = useState(false);
+
   useEffect(() => {
-    Prism.highlightAll();
+    setIsMounted(true);
+    if (typeof window !== "undefined") {
+      Prism.highlightAll();
+    }
   }, [content]);
 
   const copyMessage = () => {

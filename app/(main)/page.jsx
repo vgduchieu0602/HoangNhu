@@ -23,6 +23,7 @@ export default function Home() {
   const [expand, setExpand] = useState(false);
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const {
     apiVersion,
     setApiVersion,
@@ -30,6 +31,10 @@ export default function Home() {
     isLoading: isContextLoading,
   } = useAppContext();
   const containerRef = useRef(null);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handlePromptClick = (promptText) => {
     setIsLoading(true);
@@ -51,9 +56,10 @@ export default function Home() {
     }
   }, [messages]);
 
-  {
-    /** === Animation Loading HomePage === */
+  if (!isMounted) {
+    return null;
   }
+
   if (isContextLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-[#dbc6fd]">
