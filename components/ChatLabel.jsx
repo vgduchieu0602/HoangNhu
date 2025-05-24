@@ -59,7 +59,7 @@ const ChatLabel = ({ openMenu, setOpenMenu, id, name }) => {
   return (
     <div
       onClick={selectChat}
-      className="flex items-center justify-between p-2 text-white/80 hover:bg-primary/50 rounded-lg text-sm group cursor-pointer border mb-2"
+      className="flex items-center justify-between p-2 bg-[#a360f0] text-white hover:bg-[#7b2be0] rounded-lg text-sm group cursor-pointer border border-white mb-2"
     >
       <p className="group-hover:max-w-5/6 truncate">{name}</p>
       <div

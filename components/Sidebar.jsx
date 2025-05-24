@@ -66,8 +66,8 @@ const Sidebar = ({ expand, setExpand }) => {
           onClick={createNewChat}
           className={`mt-8 flex items-center justify-center cursor-pointer ${
             expand
-              ? "bg-primary hover:opacity-90 rounded-2xl gap-2 p-2.5 w-max"
-              : "group relative h-9 w-9 mx-auto hover:bg-primary rounded-lg"
+              ? "bg-[#a360f0] hover:bg-[#7b2be0] rounded-2xl gap-2 p-2.5 w-max border border-white"
+              : "group relative h-9 w-9 mx-auto hover:bg-[#7b2be0] rounded-lg"
           }`}
         >
           <Image className="w-7" src={assets.chat_icon} alt="Chat Icon" />
@@ -83,7 +83,7 @@ const Sidebar = ({ expand, setExpand }) => {
             expand ? "block" : "hidden"
           }`}
         >
-          <p className="my-1 text-black">Recents</p>
+          <p className="my-1 text-[#4a0077]">Recents</p>
           {/* === ChatLabel === */}
           <ScrollArea className="h-134 w-58 p-2 relative">
             <div className="space-y-1">
@@ -105,7 +105,7 @@ const Sidebar = ({ expand, setExpand }) => {
         <div
           className={`flex items-center cursor-pointer group relative ${
             expand
-              ? "gap-1 text-white/80 text-sm p-2.5 border border-primary rounded-lg hover:bg-primary cursor-pointer"
+              ? "gap-1 text-white/80 text-sm p-2.5 border border-white rounded-lg bg-[#a360f0] hover:bg-[#7b2be0] cursor-pointer"
               : "h-10 w-10 mx-auto hover:bg-primary rounded-lg"
           }`}
         >
@@ -135,8 +135,10 @@ const Sidebar = ({ expand, setExpand }) => {
         <div
           onClick={user ? null : openSignIn}
           className={`flex items-center ${
-            expand ? "hover:bg-white/10 rounded-lg" : "justify-center w-full"
-          } gap-3 text-white/60 text-sm p-2 mt-2 cursor-pointer`}
+            expand
+              ? "bg-[#a360f0] hover:bg-[#7b2be0] rounded-lg border border-white"
+              : "justify-center w-full"
+          } gap-3 text-white text-sm p-2 mt-2 cursor-pointer`}
         >
           {user ? (
             <UserButton />
@@ -148,7 +150,11 @@ const Sidebar = ({ expand, setExpand }) => {
             />
           )}
 
-          {expand && <span>My profile</span>}
+          {expand && (
+            <span>
+              {user ? `${user.firstName} ${user.lastName}` : "My profile"}
+            </span>
+          )}
         </div>
       </div>
     </div>
