@@ -4,6 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { useChat } from "ai/react";
 import { Mesage } from "ai";
 
+import axios from "axios";
+import { toast } from "react-hot-toast";
+
 import Image from "next/image";
 
 import { useAppContext } from "@/context/AppContext";
@@ -36,9 +39,26 @@ export default function Home() {
     setIsMounted(true);
   }, []);
 
-  const handlePromptClick = (promptText) => {
-    setIsLoading(true);
-    setMessages([...messages, { role: "user", content: promptText }]);
+  const handlePromptClick = async (promptText) => {
+    try {
+      setIsLoading(true);
+      setMessages([...messages, { role: "user", content: promptText }]);
+
+      const { data } = await axios.post("/api/chat/classic", {
+        chatId: selectedChat._id,
+        prompt: promptText,
+      });
+
+      if (data.success) {
+        setMessages((prev) => [...prev, data.data]);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
