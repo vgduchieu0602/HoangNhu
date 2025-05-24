@@ -46,3 +46,28 @@ pre {
   box-shadow: #959da533 0 8px 24px;
   cursor: pointer;
 }
+
+.prompt-suggestions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  max-width: 48rem;
+  margin: 1rem 0;
+}
+
+.prompt-suggestions-button {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.75rem;
+  padding: 0.5rem 1rem;
+  color: white;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.prompt-suggestions-button:hover {
+  background-color: rgba(221, 19, 19, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}

@@ -5,6 +5,8 @@ import React from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 
+import { Ellipsis } from "lucide-react";
+
 const ChatLabel = ({ openMenu, setOpenMenu, id, name }) => {
   const { fetchUsersChats, chats, setSelectedChat } = useAppContext();
 
@@ -69,7 +71,7 @@ const ChatLabel = ({ openMenu, setOpenMenu, id, name }) => {
         }}
         className="group relative flex items-center justify-center h-6 w-6 aspect-square hover:bg-primary rounded-lg"
       >
-        <Image src={assets.three_dots} alt="" className="w-4" />
+        <Ellipsis className="h-5 w-5" />
         <div
           className={`absolute ${
             openMenu.id === id && openMenu.open ? "block" : "hidden"

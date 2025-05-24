@@ -35,13 +35,7 @@ const {
 
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
-const nuuData = [
-  "https://nhathuoclongchau.com.vn/thuoc/exopadin-60-mg-truong-tho-3-x10.html",
-  "https://nhathuoclongchau.com.vn/thuoc/cetirizin-10mg-truong-tho-10x10-33669.html",
-  "https://nhathuoclongchau.com.vn/thuoc/clorpheniramin-4mg-khanh-hoa-10x20-33614.html",
-  "https://nhathuoclongchau.com.vn/thuoc/allerphast-180mg-4805.html",
-  "https://nhathuoclongchau.com.vn/thuoc/histalong-l-5mg-drreddy-2x10-30344.html",
-];
+const nuuData = ["https://nhathuoclongchau.com.vn/"];
 
 const client = new DataAPIClient(ASTRA_DB_APPLICATION_TOKEN);
 const db = client.db(ASTRA_DB_API_ENDPOINT, { namespace: ASTRA_DB_NAMESPACE });
@@ -51,55 +45,77 @@ const splitter = new RecursiveCharacterTextSplitter({
   chunkOverlap: 100,
 });
 
-const createCollection = async (similarityMetric:SimilarityMetric = "dot_product") => {
-  const res = await db.createCollection(ASTRA_DB_COLLECTION, {
-    vector: {
-      dimension: 1536,
-      metric: similarityMetric,
-    },
-  });
-  console.log(res)
+const createCollection = async (
+  similarityMetric: SimilarityMetric = "dot_product"
+) => {
+  try {
+    // Try to create collection
+    const res = await db.createCollection(ASTRA_DB_COLLECTION, {
+      vector: {
+        dimension: 1536,
+        metric: similarityMetric,
+      },
+    });
+    console.log("Collection created successfully:", res);
+  } catch (error: any) {
+    // If collection already exists, just log and continue
+    if (error.message?.includes("already exists")) {
+      console.log("Collection already exists, proceeding with data loading...");
+    } else {
+      // If it's a different error, throw it
+      throw error;
+    }
+  }
 };
 
 const loadSampleData = async () => {
-  const collection = await db.collection(ASTRA_DB_COLLECTION)
-  for await (const url of nuuData) {
-    const content = await scrapePage(url)
-    const chunks = await splitter.splitText(content)
-    for await (const chunk of chunks) {
-      const embedding = await openai.embeddings.create({
-        model: "text-embedding-3-small",
-        input: chunk,
-        encoding_format: "float"
-      })
+  try {
+    const collection = await db.collection(ASTRA_DB_COLLECTION);
+    for await (const url of nuuData) {
+      console.log(`Processing URL: ${url}`);
+      const content = await scrapePage(url);
+      const chunks = await splitter.splitText(content);
+      for await (const chunk of chunks) {
+        const embedding = await openai.embeddings.create({
+          model: "text-embedding-3-small",
+          input: chunk,
+          encoding_format: "float",
+        });
 
-      const vector = embedding.data[0].embedding
+        const vector = embedding.data[0].embedding;
 
-      const res = await collection.insertOne({
-        $vector: vector,
-        text: chunk
-      })
-      console.log(res)
+        const res = await collection.insertOne({
+          $vector: vector,
+          text: chunk,
+          url: url, // Adding URL to track source
+          timestamp: new Date(), // Adding timestamp
+        });
+        console.log("Inserted document:", res);
+      }
     }
+    console.log("Data loading completed successfully!");
+  } catch (error) {
+    console.error("Error loading data:", error);
+    throw error;
   }
-}
+};
 
-const scrapePage = async (url:string) => {
+const scrapePage = async (url: string) => {
   const loader = new PuppeteerWebBaseLoader(url, {
     launchOptions: {
-      headless: true
+      headless: true,
     },
     gotoOptions: {
-      waitUntil: "domcontentloaded"
+      waitUntil: "domcontentloaded",
     },
     evaluate: async (page, browser) => {
-      const result = await page.evaluate(() => document.body.innerHTML)
-      await browser.close()
-      return result
-    }
-  })
+      const result = await page.evaluate(() => document.body.innerHTML);
+      await browser.close();
+      return result;
+    },
+  });
 
-  return (await loader.scrape())?.replace(/<[^>]*>?/gm, '')
-}
+  return (await loader.scrape())?.replace(/<[^>]*>?/gm, "");
+};
 
-createCollection().then(() => loadSampleData())
+createCollection().then(() => loadSampleData());

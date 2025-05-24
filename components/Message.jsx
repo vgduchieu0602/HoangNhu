@@ -5,6 +5,12 @@ import Markdown from "react-markdown";
 import Prism from "prismjs";
 import toast from "react-hot-toast";
 
+import { Copy } from "lucide-react";
+import { SquarePen } from "lucide-react";
+import { RefreshCcw } from "lucide-react";
+import { ThumbsDown } from "lucide-react";
+import { ThumbsUp } from "lucide-react";
+
 const Message = ({ role, content }) => {
   const [isMounted, setIsMounted] = useState(false);
 
@@ -40,56 +46,36 @@ const Message = ({ role, content }) => {
             <div className="flex items-center gap-2 opacity-70">
               {role === "user" ? (
                 <>
-                  <Image
+                  <Copy
                     onClick={copyMessage}
-                    src={assets.copy_icon}
-                    alt=""
-                    className="w-4 cursor-pointer"
+                    className="w-5 h-5 cursor-pointer"
                   />
-                  <Image
-                    src={assets.pencil_icon}
-                    alt=""
-                    className="w-4.5 cursor-pointer"
-                  />
+                  <SquarePen className="w-5 h-5 cursor-pointer" />
                 </>
               ) : (
                 <>
-                  <Image
+                  <Copy
                     onClick={copyMessage}
-                    src={assets.copy_icon}
-                    alt=""
-                    className="w-4.5 cursor-pointer"
+                    className="w-5 h-5 cursor-pointer"
                   />
-                  <Image
-                    src={assets.regenerate_icon}
-                    alt=""
-                    className="w-4 cursor-pointer"
-                  />
-                  <Image
-                    src={assets.like_icon}
-                    alt=""
-                    className="w-4 cursor-pointer"
-                  />
-                  <Image
-                    src={assets.dislike_icon}
-                    alt=""
-                    className="w-4 cursor-pointer"
-                  />
+                  <RefreshCcw className="w-5 h-5 cursor-pointer" />
+                  <ThumbsDown className="w-5 h-5 cursor-pointer" />
+                  <ThumbsUp className="w-5 h-5 cursor-pointer" />
                 </>
               )}
             </div>
           </div>
 
           {role === "user" ? (
-            <span className="text-white/90">{content}</span>
+            <span className="text-white">{content}</span>
           ) : (
             <>
               <Image
                 src={assets.logo_icon}
                 alt=""
-                className="h-9 w-9 p-1 border border-white/15 rounded-full"
+                className="h-9 w-9 p-1 border border-white rounded-full"
               />
-              <div className="space-y-4 w-full overflow-scroll">
+              <div className="space-y-4 w-full overflow-scroll bg-[#414158]/25 px-10 py-5 rounded-xl">
                 <Markdown>{content}</Markdown>
               </div>
             </>
