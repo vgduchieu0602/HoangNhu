@@ -21,6 +21,7 @@ import PromptSuggestionsRow from "@/components/PromptSuggestionsRow";
 
 import { Menu } from "lucide-react";
 import { MessagesSquare } from "lucide-react";
+import { ModeToggle } from "@/components/ModeToggle";
 
 export default function Home() {
   const [expand, setExpand] = useState(false);
@@ -162,7 +163,7 @@ export default function Home() {
               )}
             </div>
           )}
-
+          <ModeToggle />
           {/** ===== PROMPT BOX ===== */}
           <PromptBox isLoading={isLoading} setIsLoading={setIsLoading} />
 

@@ -102,8 +102,6 @@ const Sidebar = ({ expand, setExpand }) => {
         </div>
       </div>
 
-      <ModeToggle />
-
       <div>
         <div
           className={`flex items-center cursor-pointer group relative ${

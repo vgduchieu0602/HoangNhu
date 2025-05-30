@@ -4,37 +4,29 @@ import * as React from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
 export function ModeToggle() {
-  const { setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-          <span className="sr-only">Toggle theme</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
-          Light
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
-          Dark
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
-          System
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div className="fixed top-6 right-6">
+      <div className="relative flex items-center">
+        <button
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          className="relative h-8 w-16 rounded-full bg-white/10 backdrop-blur-sm border border-purple-500/80 transition-all duration-300 ease-in-out p-4"
+        >
+          <div
+            className={`absolute top-1 left-1 h-6 w-6 rounded-full bg-white transition-all duration-300 ease-in-out flex items-center justify-center ${
+              theme === "dark" ? "translate-x-8" : "translate-x-0"
+            }`}
+          >
+            {theme === "dark" ? (
+              <Moon className="h-4 w-4 text-purple-600" />
+            ) : (
+              <Sun className="h-4 w-4 text-purple-600" />
+            )}
+          </div>
+        </button>
+      </div>
+    </div>
   );
 }
