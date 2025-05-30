@@ -11,6 +11,7 @@ import { PanelRightOpen } from "lucide-react";
 import { Smartphone } from "lucide-react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { ModeToggle } from "./ModeToggle";
 
 const Sidebar = ({ expand, setExpand }) => {
   const { openSignIn } = useClerk();
@@ -100,6 +101,8 @@ const Sidebar = ({ expand, setExpand }) => {
           </ScrollArea>
         </div>
       </div>
+
+      <ModeToggle />
 
       <div>
         <div
