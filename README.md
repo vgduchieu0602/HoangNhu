@@ -1,31 +1,29 @@
 # Hoang Nhu Project
 
-A Next.js web application with AI capabilities and modern UI components.
+## Yêu cầu
 
-## Prerequisites
-
-Before you begin, ensure you have the following installed:
+Trước khi cài đặt, đảm bảo máy bạn đã cài đặt:
 
 - Node.js (v18 or higher)
 - npm (comes with Node.js)
 - Git
 
-## Installation
+## Cài đặt
 
-1. Clone the repository:
+1. Clone ứng dụng về máy:
 
 ```bash
 git clone [your-repository-url]
 cd hoang-nhu
 ```
 
-2. Install dependencies:
+2. Cài đặt thư viện:
 
 ```bash
 npm install
 ```
 
-3. Create a `.env` file in the root directory and add the following environment variables:
+3. Tạo file `.env` trong thư mục gốc và thêm các biến môi trường:
 
 ```env
 # Clerk Authentication
@@ -43,37 +41,37 @@ ASTRA_DB_REGION=your_astra_db_region
 
 ## Development
 
-To run the development server:
+Để khởi động ứng dụng:
 
 ```bash
 npm run dev
 ```
 
-The application will be available at `http://localhost:3000`
+Project thường sẽ chạy trên đường dẫn: `http://localhost:3000`
 
 ## Building for Production
 
-To create a production build:
+Để build project chạy câu lệnh:
 
 ```bash
 npm run build
 ```
 
-To start the production server:
+Để bắt đầu khởi tạo server production chạy câu lệnh:
 
 ```bash
 npm start
 ```
 
-## Available Scripts
+## Các câu lệnh thực thi
 
-- `npm run dev` - Start development server with Turbopack
-- `npm run build` - Create production build
-- `npm start` - Start production server
-- `npm run lint` - Run ESLint
-- `npm run seed` - Seed the database with initial data
+- `npm run dev` - Khởi chạy chế độ phát triển với Turbopack
+- `npm run build` - Tạo bản dựng production
+- `npm start` - Tạo server production
+- `npm run lint` - Chạy ESLint
+- `npm run seed` - Tạo dữ liệu mẫu với database
 
-## Tech Stack
+## Công nghệ sử dụng
 
 - **Framework**: Next.js 15.2.3
 - **Authentication**: Clerk
@@ -90,7 +88,7 @@ npm start
   - ESLint
   - Turbopack
 
-## Project Structure
+## Cấu trúc thư mục
 
 ```
 hoang-nhu/
@@ -104,17 +102,11 @@ hoang-nhu/
 └── config/          # Configuration files
 ```
 
-## Contributing
+## Bản quyền
 
-1. Create a new branch for your feature
-2. Make your changes
-3. Submit a pull request
+Dự án này là riêng tư và thuộc quyền sở hữu
 
-## License
-
-This project is private and proprietary.
-
-## Author
+## Tác giả
 
 Vương Đức Hiếu
 
