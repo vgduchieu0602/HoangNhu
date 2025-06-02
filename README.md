@@ -29,14 +29,20 @@ npm install
 # Clerk Authentication
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
 CLERK_SECRET_KEY=your_clerk_secret_key
+SIGNING_SECRET=your_webhook_secret_key
+
+# Database (MongoDB)
+MONGODB_URI=your_mongo_uri
+
 
 # OpenAI
 OPENAI_API_KEY=your_openai_api_key
 
 # Database (Astra DB)
+ASTRA_DB_NAMESPACE=your_namespace_astra_db
 ASTRA_DB_APPLICATION_TOKEN=your_astra_db_token
-ASTRA_DB_ID=your_astra_db_id
-ASTRA_DB_REGION=your_astra_db_region
+ASTRA_DB_COLLECTION=your_astra_db_collection
+ASTRA_DB_APPLICATION_TOKEN=your_astra_application_token
 ```
 
 ## Development
