@@ -13,7 +13,7 @@ Trước khi cài đặt, đảm bảo máy bạn đã cài đặt:
 1. Clone ứng dụng về máy:
 
 ```bash
-git clone [your-repository-url]
+git clone https://github.com/vgduchieu0602/HoangNhu.git
 cd hoang-nhu
 ```
 
