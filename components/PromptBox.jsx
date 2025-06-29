@@ -58,7 +58,7 @@ const PromptBox = ({ setIsLoading, isLoading }) => {
       }));
 
       const { data } = await axios.post(
-        `/api/chat/${apiVersion === "classic" ? "classic" : "ai"}`,
+        `/api/chat/${apiVersion === "classic" ? "classic" : "premium"}`,
         {
           chatId: selectedChat._id,
           prompt,
