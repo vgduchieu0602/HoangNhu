@@ -48,6 +48,7 @@ export async function POST(req) {
     };
 
     await connectDB();
+    console.log("MongoDB connected:", mongoose.connection.readyState);
 
     switch (type) {
       case "user.created":

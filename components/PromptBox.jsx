@@ -116,7 +116,7 @@ const PromptBox = ({ setIsLoading, isLoading }) => {
       onSubmit={sendPrompt}
       className={`w-full ${
         selectedChat?.messages.length > 0 ? "max-w-3xl" : "max-w-2xl"
-      } bg-[#404045] p-4 rounded-3xl mt-4 transition-all`}
+      } bg-[#404045] py-4 px-6 rounded-3xl mt-4 transition-all`}
     >
       <textarea
         onKeyDown={handleKeyDown}
@@ -128,28 +128,43 @@ const PromptBox = ({ setIsLoading, isLoading }) => {
         value={prompt}
       />
 
-      <div className="flex items-center justify-between text-sm">
+      <div className="flex items-center justify-between text-sm mt-3">
         <div className="flex items-center gap-2">
-          <p className="flex items-center gap-2 text-xs border border-gray-300/40 px-2 py-1 rounded-full cursor-pointer hover:bg-gray-500/20 transition">
-            <Image
-              className="h-5"
-              src={assets.deepthink_icon}
-              alt="Deepthing icon"
-            />
-            DeepThink (R1)
-          </p>
-          <p className="flex items-center gap-2 text-xs border border-gray-300/40 px-2 py-1 rounded-full cursor-pointer hover:bg-gray-500/20 transition">
-            <Image className="h-5" src={assets.search_icon} alt="Search icon" />
-            Search
-          </p>
+          <div className="relative">
+            <p className="flex items-center gap-2 text-xs border border-gray-300/40 px-2 py-1 rounded-full cursor-pointer hover:bg-gray-500/20 transition">
+              <Image
+                className="h-5"
+                src={assets.deepthink_icon}
+                alt="Deepthing icon"
+              />
+              DeepThink (R1)
+            </p>
+            <span
+              className="absolute -top-3 -right-2 text-white text-[10px] px-2 py-0.5 rounded-full font-semibold shadow"
+              style={{ backgroundColor: "var(--color-hover)" }}
+            >
+              coming soon
+            </span>
+          </div>
+          <div className="relative">
+            <p className="flex items-center gap-2 text-xs border border-gray-300/40 px-2 py-1 rounded-full cursor-pointer hover:bg-gray-500/20 transition">
+              <Image
+                className="h-5"
+                src={assets.search_icon}
+                alt="Search icon"
+              />
+              Search
+            </p>
+            <span
+              className="absolute -top-3 -right-2 text-white text-[10px] px-2 py-0.5 rounded-full font-semibold shadow"
+              style={{ backgroundColor: "var(--color-hover)" }}
+            >
+              coming soon
+            </span>
+          </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <Image
-            className="w-4 cursor-pointer"
-            src={assets.pin_icon}
-            alt="Pin icon"
-          />
           <button
             className={`${
               prompt ? "bg-primary" : "bg-[#71717a]"

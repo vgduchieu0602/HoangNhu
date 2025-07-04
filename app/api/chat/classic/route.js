@@ -6,6 +6,7 @@ import { getAuth } from "@clerk/nextjs/server";
 import connectDB from "@/config/db";
 import Chat from "@/models/Chat";
 import { NextRequest, NextResponse } from "next/server";
+import SuggestedQuestion from "@/models/SuggestedQuestion";
 
 const {
   ASTRA_DB_NAMESPACE,
@@ -26,10 +27,20 @@ const db = client.db(ASTRA_DB_API_ENDPOINT, {
 
 export async function POST(req) {
   try {
+    const body = await req.json();
+    // Nếu có content (từ suggested-questions), lưu vào DB
+    if (body.content) {
+      await connectDB();
+      const newQuestion = await SuggestedQuestion.create({
+        content: body.content,
+      });
+      return NextResponse.json({ success: true, data: newQuestion });
+    }
+
     const { userId } = getAuth(req);
 
     //Extract chatId and prompt from the request body
-    const { chatId, prompt } = await req.json();
+    const { chatId, prompt } = body;
 
     if (!userId) {
       return NextResponse.json({
@@ -118,5 +129,15 @@ export async function POST(req) {
       error:
         error instanceof Error ? error.message : "An unknown error occurred",
     });
+  }
+}
+
+export async function GET(req) {
+  try {
+    await connectDB();
+    const questions = await SuggestedQuestion.find({}).sort({ createdAt: -1 });
+    return NextResponse.json({ success: true, data: questions });
+  } catch (error) {
+    return NextResponse.json({ success: false, message: error.message });
   }
 }

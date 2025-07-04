@@ -26,8 +26,7 @@ const navigation = [
   },
   {
     name: "Thêm câu hỏi đề xuất",
-    // href: "/dashboard/suggested-questions",
-    href: "#",
+    href: "/dashboard/suggested-questions",
     icon: <PlusCircle className="mr-3 h-6 w-6" />,
   },
   {

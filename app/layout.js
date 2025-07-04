@@ -2,9 +2,11 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import "./prism.css";
 import { ClerkProvider } from "@clerk/nextjs";
-import { AppContextProvider } from "@/context/AppContext";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "@/components/theme-provider";
+
+import { AppContextProvider } from "@/context/AppContext";
+import { PromptProvider } from "@/context/PromptContext";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -22,20 +24,22 @@ export default function RootLayout({ children }) {
       <body className={`${inter.className} antialiased`}>
         <ClerkProvider>
           <AppContextProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <Toaster
-                toastOptions={{
-                  success: { style: { background: "black", color: "white" } },
-                  error: { style: { background: "black", color: "white" } },
-                }}
-              />
-              {children}
-            </ThemeProvider>
+            <PromptProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+              >
+                <Toaster
+                  toastOptions={{
+                    success: { style: { background: "black", color: "white" } },
+                    error: { style: { background: "black", color: "white" } },
+                  }}
+                />
+                {children}
+              </ThemeProvider>
+            </PromptProvider>
           </AppContextProvider>
         </ClerkProvider>
       </body>

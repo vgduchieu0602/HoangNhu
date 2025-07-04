@@ -1,18 +1,45 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PromptSuggestionsButton from "./PromptSuggestionsButton";
+import axios from "axios";
+
+const getRandomItems = (arr, n) => {
+  const result = [];
+  const taken = new Set();
+  while (result.length < n && result.length < arr.length) {
+    const idx = Math.floor(Math.random() * arr.length);
+    if (!taken.has(idx)) {
+      taken.add(idx);
+      result.push(arr[idx]);
+    }
+  }
+  return result;
+};
 
 const PromptSuggestionsRow = ({ onPromptClick }) => {
-  const prompts = [
-    "Cách sử dụng thuốc Exopadin như nào?",
-    "Xơ vữa động mạch là gì?",
-    "Tim đập nhanh thì phải làm gì?",
-    "Bị nhồi máu cơ tim thì phải sơ cứu sao?",
-    "Thực phẩm chức năng bổ sung Vitamin C ở trẻ em là gì?",
-    "Thuốc hỗ trợ xương khớp dùng loại nào?",
-  ];
+  const [prompts, setPrompts] = useState([]);
+  const [randomPrompts, setRandomPrompts] = useState([]);
+
+  useEffect(() => {
+    const fetchPrompts = async () => {
+      try {
+        const res = await axios.get("/api/chat/classic");
+        if (res.data.success) {
+          setPrompts(res.data.data.map((q) => q.content));
+        }
+      } catch (error) {
+        setPrompts([]);
+      }
+    };
+    fetchPrompts();
+  }, []);
+
+  useEffect(() => {
+    setRandomPrompts(getRandomItems(prompts, 5));
+  }, [prompts]);
+
   return (
     <div className="prompt-suggestions-row">
-      {prompts.map((prompt, index) => (
+      {randomPrompts.map((prompt, index) => (
         <PromptSuggestionsButton
           key={index}
           text={prompt}
