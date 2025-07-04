@@ -45,7 +45,6 @@ export async function POST(req) {
       email: data.email_addresses?.[0]?.email_address || "",
       name: `${data.first_name || ""} ${data.last_name || ""}`.trim(),
       image: data.image_url || "",
-      role: data.role || "user",
     };
 
     await connectDB();
