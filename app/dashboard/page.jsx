@@ -2,6 +2,7 @@ import connectDB from "@/config/db";
 import User from "@/models/User";
 import Chat from "@/models/Chat";
 import Image from "next/image";
+import UserList from "@/components/dashboard/UserList";
 
 export default async function DashboardPage() {
   await connectDB();
@@ -159,47 +160,7 @@ export default async function DashboardPage() {
         <h2 className="text-lg font-medium text-gray-900">
           Danh sách người dùng
         </h2>
-        <div className="mt-4 bg-white shadow rounded-lg">
-          <ul className="divide-y divide-gray-200">
-            {userStats.map((user) => (
-              <li key={user._id} className="p-4">
-                <div className="flex items-center space-x-4">
-                  <div className="flex-shrink-0">
-                    {user.image ? (
-                      <Image
-                        className="h-8 w-8 rounded-full"
-                        src={user.image}
-                        alt={user.name}
-                        width={32}
-                        height={32}
-                      />
-                    ) : (
-                      <div className="h-8 w-8 rounded-full bg-gray-200"></div>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">
-                      {user.name}
-                    </p>
-                    <p className="text-sm text-gray-500 truncate">
-                      {user.email}
-                    </p>
-                  </div>
-                  <div className="flex space-x-4">
-                    <div className="text-sm text-gray-500">
-                      <span className="font-medium">{user.chatCount}</span> hội
-                      thoại
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      <span className="font-medium">{user.messageCount}</span>{" "}
-                      tin nhắn
-                    </div>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <UserList users={userStats} />
       </div>
     </div>
   );
