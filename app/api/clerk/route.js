@@ -7,7 +7,7 @@ import { headers } from "next/headers";
 
 export async function POST(req) {
   try {
-    const wh = new Webhook(process.env.SIGNING_SECRET);
+    const wh = new Webhook("whsec_JTh8n9WKn0DgukBpGBgj2QbC5HqH3t8G");
     const headerPayload = await headers();
     const svixHeaders = {
       "svix-id": headerPayload.get("svix-id"),
@@ -19,14 +19,16 @@ export async function POST(req) {
     console.log("Svix Headers:", svixHeaders);
 
     //Get the payload and verify it
-    const payload = await req.json();
+    const payload = await req.text();
     const body = JSON.stringify(payload);
     // Log payload để debug
     console.log("Webhook Payload:", payload);
 
     let data, type;
+
     try {
       ({ data, type } = wh.verify(body, svixHeaders));
+      console.log("Type: ", type);
     } catch (verifyError) {
       console.error("Svix verify error:", verifyError);
       return NextResponse.json(
