@@ -35,7 +35,7 @@ const {
 
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
-const nuuData = ["https://tiemchunglongchau.com.vn/"];
+const nuuData = ["https://nhathuocminhchau.com/"];
 
 const client = new DataAPIClient(ASTRA_DB_APPLICATION_TOKEN);
 const db = client.db(ASTRA_DB_API_ENDPOINT, { namespace: ASTRA_DB_NAMESPACE });

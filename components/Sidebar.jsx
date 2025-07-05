@@ -1,9 +1,10 @@
 import { assets } from "@/assets/assets";
 import Image from "next/image";
 import React, { useState } from "react";
-import { useClerk, UserButton } from "@clerk/nextjs";
+import { useClerk } from "@clerk/nextjs";
 import { useAppContext } from "@/context/AppContext";
 import ChatLabel from "./ChatLabel";
+import CustomUserButton from "./CustomUserButton";
 
 import { Menu } from "lucide-react";
 import { PanelLeftOpen } from "lucide-react";
@@ -142,7 +143,7 @@ const Sidebar = ({ expand, setExpand }) => {
           } gap-3 text-white text-sm p-2 mt-2 cursor-pointer`}
         >
           {user ? (
-            <UserButton />
+            <CustomUserButton />
           ) : (
             <Image
               src={assets.profile_icon}

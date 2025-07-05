@@ -1,7 +1,7 @@
 "use client";
 
-import { UserButton } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
+import CustomUserButton from "../CustomUserButton";
 
 export default function Header() {
   const [mounted, setMounted] = useState(false);
@@ -22,7 +22,7 @@ export default function Header() {
             <h1 className="text-2xl font-semibold text-gray-900">Trang chủ</h1>
           </div>
           <div className="flex items-center">
-            <UserButton />
+            <CustomUserButton />
           </div>
         </div>
       </div>
