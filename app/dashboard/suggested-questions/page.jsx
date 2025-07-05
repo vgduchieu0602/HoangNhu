@@ -3,8 +3,18 @@
 import React, { useState, useEffect } from "react";
 import { usePromptContext } from "@/context/PromptContext";
 import axios from "axios";
-import { SquarePen, Trash2, Check, X } from "lucide-react";
+import { SquarePen, Trash2, Check, X, Plus } from "lucide-react";
 import { Toaster, toast } from "react-hot-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 function PlusIcon() {
   return (
@@ -36,7 +46,7 @@ export default function SuggestedQuestionsPage() {
   const [loading, setLoading] = useState(false);
   const [editId, setEditId] = useState(null);
   const [editContent, setEditContent] = useState("");
-  const [showModal, setShowModal] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [modalInput, setModalInput] = useState("");
   const [modalLoading, setModalLoading] = useState(false);
   const [search, setSearch] = useState("");
@@ -91,7 +101,7 @@ export default function SuggestedQuestionsPage() {
         content: modalInput.trim(),
       });
       setModalInput("");
-      setShowModal(false);
+      setModalOpen(false);
       fetchQuestions(1);
       setPage(1);
       toast.success("Đã lưu câu hỏi thành công!");
@@ -145,27 +155,112 @@ export default function SuggestedQuestionsPage() {
       <div className="bg-white overflow-hidden shadow rounded-lg p-5 col-span-1 sm:col-span-2 lg:col-span-3">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-gray-800">Đề xuất câu hỏi</h1>
-          <button
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-full shadow transition"
-            onClick={() => setShowModal(true)}
-          >
-            <PlusIcon />
-            <span>Tạo</span>
-          </button>
+          <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+            <DialogTrigger asChild>
+              <Button className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                <span>Tạo</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px] bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+              <DialogHeader>
+                <DialogTitle>Tạo câu hỏi mới</DialogTitle>
+                <DialogDescription>
+                  Nhập nội dung câu hỏi đề xuất để người dùng có thể sử dụng.
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleModalSubmit} className="space-y-4">
+                <textarea
+                  className="w-full border border-gray-200 dark:border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition min-h-[80px] resize-none text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700"
+                  rows={3}
+                  placeholder="Nhập nội dung câu hỏi đề xuất..."
+                  value={modalInput}
+                  onChange={(e) => setModalInput(e.target.value)}
+                  autoFocus
+                  disabled={modalLoading}
+                />
+                <DialogFooter>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setModalOpen(false)}
+                    disabled={modalLoading}
+                  >
+                    Hủy
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={modalLoading || !modalInput.trim()}
+                  >
+                    {modalLoading ? (
+                      <>
+                        <svg
+                          className="animate-spin h-4 w-4 mr-2"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8v8z"
+                          ></path>
+                        </svg>
+                        Đang lưu...
+                      </>
+                    ) : (
+                      <>
+                        <Plus className="h-4 w-4 mr-2" />
+                        Lưu
+                      </>
+                    )}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
         {/* Thanh tìm kiếm */}
-        <form
-          className="mb-4 flex items-center gap-2 max-w-md"
-          onSubmit={(e) => e.preventDefault()} // Không làm gì khi submit
-        >
-          <input
-            type="text"
-            className="flex-1 border rounded px-3 py-2 focus:ring-2 focus:ring-blue-400"
-            placeholder="Tìm kiếm câu hỏi..."
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-          />
-        </form>
+        <div className="mb-4">
+          <div className="relative max-w-md">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg
+                className="h-5 w-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+            <input
+              type="text"
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              placeholder="Tìm kiếm câu hỏi..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+            />
+          </div>
+        </div>
+        {/* Kết quả tìm kiếm */}
+        <div className="mb-4 text-sm text-gray-600">
+          Hiển thị {questions.length} trong tổng số{" "}
+          {questions.length + (totalPages - page) * limit} câu hỏi
+          {search && ` (tìm kiếm: "${search}")`}
+        </div>
         {success && (
           <div className="mb-4 text-green-600 font-medium">Đã lưu câu hỏi!</div>
         )}
@@ -262,101 +357,109 @@ export default function SuggestedQuestionsPage() {
             </tbody>
           </table>
         </div>
-        {/* Pagination */}
-        <div className="flex justify-center items-center gap-2 mt-6">
-          <button
-            className="px-3 py-1 border rounded disabled:opacity-50 bg-gray-50 hover:bg-gray-100"
-            onClick={() => setPage(page - 1)}
-            disabled={page <= 1}
-          >
-            Trước
-          </button>
-          <span className="font-medium text-gray-700">
-            Trang {page} / {totalPages}
-          </span>
-          <button
-            className="px-3 py-1 border rounded disabled:opacity-50 bg-gray-50 hover:bg-gray-100"
-            onClick={() => setPage(page + 1)}
-            disabled={page >= totalPages}
-          >
-            Sau
-          </button>
-        </div>
-        {/* Modal thêm mới */}
-        {showModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm animate-fadeIn">
-            <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md relative animate-fadeIn border border-blue-100">
+        {/* Pagination mới dạng số */}
+        {totalPages > 1 && (
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-2 mt-6">
+            <div className="flex-1 flex justify-between sm:hidden">
               <button
-                className="absolute top-3 right-3 text-gray-400 hover:text-blue-600 text-2xl font-bold transition-colors"
-                onClick={() => setShowModal(false)}
-                aria-label="Đóng"
+                onClick={() => setPage(page - 1)}
+                disabled={page <= 1}
+                className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <span aria-hidden>×</span>
+                Trước
               </button>
-              <div className="flex items-center gap-2 mb-4">
-                <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-600">
-                  <PlusIcon />
-                </span>
-                <h2 className="text-xl font-bold text-gray-800">
-                  Tạo câu hỏi mới
-                </h2>
+              <button
+                onClick={() => setPage(page + 1)}
+                disabled={page >= totalPages}
+                className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Sau
+              </button>
+            </div>
+            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between w-full">
+              <div>
+                <p className="text-sm text-gray-700">
+                  Hiển thị{" "}
+                  <span className="font-medium">{(page - 1) * limit + 1}</span>{" "}
+                  đến{" "}
+                  <span className="font-medium">
+                    {(page - 1) * limit + questions.length}
+                  </span>{" "}
+                  trong tổng số{" "}
+                  <span className="font-medium">
+                    {questions.length + (totalPages - page) * limit}
+                  </span>{" "}
+                  kết quả
+                </p>
               </div>
-              <form onSubmit={handleModalSubmit} className="space-y-4">
-                <textarea
-                  className="w-full border border-blue-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition min-h-[80px] resize-none text-gray-800 bg-blue-50 placeholder-gray-400"
-                  rows={3}
-                  placeholder="Nhập nội dung câu hỏi đề xuất..."
-                  value={modalInput}
-                  onChange={(e) => setModalInput(e.target.value)}
-                  autoFocus
-                  disabled={modalLoading}
-                />
-                <div className="flex justify-end gap-2">
+              <div>
+                <nav
+                  className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+                  aria-label="Pagination"
+                >
                   <button
-                    type="button"
-                    className="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition disabled:opacity-60"
-                    onClick={() => setShowModal(false)}
-                    disabled={modalLoading}
+                    onClick={() => setPage(page - 1)}
+                    disabled={page <= 1}
+                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Hủy
+                    <span className="sr-only">Trước</span>
+                    <svg
+                      className="h-5 w-5"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
                   </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition disabled:opacity-60 flex items-center gap-2"
-                    disabled={modalLoading || !modalInput.trim()}
-                  >
-                    {modalLoading ? (
-                      <svg
-                        className="animate-spin h-5 w-5 mr-2 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
+                  {/* Page numbers */}
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (p) => (
+                      <button
+                        key={p}
+                        onClick={() => setPage(p)}
+                        className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                          p === page
+                            ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
+                            : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
+                        }`}
                       >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8v8z"
-                        ></path>
-                      </svg>
-                    ) : (
-                      <PlusIcon />
-                    )}
-                    {modalLoading ? "Đang lưu..." : "Lưu"}
+                        {p}
+                      </button>
+                    )
+                  )}
+                  <button
+                    onClick={() => setPage(page + 1)}
+                    disabled={page >= totalPages}
+                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <span className="sr-only">Sau</span>
+                    <svg
+                      className="h-5 w-5"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
                   </button>
-                </div>
-              </form>
+                </nav>
+              </div>
             </div>
           </div>
         )}
       </div>
+      <Toaster position="top-right" />
     </div>
   );
 }

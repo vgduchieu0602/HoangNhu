@@ -34,7 +34,7 @@ const PromptSuggestionsRow = ({ onPromptClick }) => {
   }, []);
 
   useEffect(() => {
-    setRandomPrompts(getRandomItems(prompts, 5));
+    setRandomPrompts(getRandomItems(prompts, 6));
   }, [prompts]);
 
   return (
