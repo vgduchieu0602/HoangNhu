@@ -7,22 +7,6 @@ import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 
 import "dotenv/config";
 
-/**=== dot_proudct (tích vô hướng) ===
- * Gía trị càng lớn thì vector càng tương đồng
- * Thường được sử dụng khi các vector đã được chuẩn hóa
- */
-/**=== cosine ===
- * Đo lường góc giữa 2 vector
- * Kết quả nằm trong khoảng [-1, 1]
- * 1: 2 vector hoàn toàn giống nhau
- * 0: 2 vector không liên quan
- * -1: 2 vector đối nghịch nhau
- */
-/**=== euclidean (khoảng cách Euclidean) ===
- * Đo lường khoảng cách trực tiếp giữa 2 điểm trong không gian
- * Gía trị càng nhỏ thì 2 vector càng tương đồng
- * Thường được sử dụng khi cần đo lường khoảng cách thực tế
- */
 type SimilarityMetric = "dot_product" | "cosine" | "euclidean";
 
 const {

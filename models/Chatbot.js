@@ -13,6 +13,5 @@ const ChatbotSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Chatbot =
-  mongoose.models.Chatbot || mongoose.model("Chatbot", ChatbotSchema);
+const Chatbot = mongoose.models.Chatbot || mongoose.model("Chatbot", ChatbotSchema);
 export default Chatbot;

@@ -105,7 +105,7 @@ export async function POST(req) {
     //Call the OpenAI API to get a chat completion
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
-      messages: [{ role: "user", content: prompt }],
+      messages: [systemMessage, { role: "user", content: prompt }],
     });
 
     const message = completion.choices[0].message;
