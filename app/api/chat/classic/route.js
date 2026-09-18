@@ -27,7 +27,34 @@ const db = client.db(ASTRA_DB_API_ENDPOINT, {
 
 export async function POST(req) {
   try {
-    const body = await req.json();
+    let body;
+    try {
+      body = await req.json();
+    } catch (error) {
+      return NextResponse.json(
+        { success: false, message: "Invalid request" },
+        { status: 400 }
+      );
+    }
+
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+      return NextResponse.json(
+        { success: false, message: "Invalid request" },
+        { status: 400 }
+      );
+    }
+
+    const { userId } = getAuth(req);
+
+    if (!userId) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "User not authenticated",
+        },
+        { status: 401 }
+      );
+    }
     // Nếu có content (từ suggested-questions), lưu vào DB
     if (body.content) {
       await connectDB();
@@ -37,16 +64,19 @@ export async function POST(req) {
       return NextResponse.json({ success: true, data: newQuestion });
     }
 
-    const { userId } = getAuth(req);
-
     //Extract chatId and prompt from the request body
     const { chatId, prompt } = body;
 
-    if (!userId) {
-      return NextResponse.json({
-        success: false,
-        message: "User not authenticated",
-      });
+    if (
+      typeof chatId !== "string" ||
+      !/^[a-fA-F0-9]{24}$/.test(chatId) ||
+      typeof prompt !== "string" ||
+      !prompt.trim()
+    ) {
+      return NextResponse.json(
+        { success: false, message: "Invalid request" },
+        { status: 400 }
+      );
     }
 
     //Find the chat document in the database based on userId and chatId
@@ -118,10 +148,13 @@ export async function POST(req) {
     const message = completion.choices[0].message;
 
     if (!message) {
-      return NextResponse.json({
-        success: false,
-        error: "Invalid API response",
-      });
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid API response",
+        },
+        { status: 500 }
+      );
     }
 
     message.timestamps = Date.now();
@@ -131,11 +164,14 @@ export async function POST(req) {
     return NextResponse.json({ success: true, data: message });
   } catch (error) {
     console.error("Error in chat route:", error);
-    return NextResponse.json({
-      success: false,
-      error:
-        error instanceof Error ? error.message : "An unknown error occurred",
-    });
+    return NextResponse.json(
+      {
+        success: false,
+        error:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      },
+      { status: 500 }
+    );
   }
 }
 
@@ -145,6 +181,9 @@ export async function GET(req) {
     const questions = await SuggestedQuestion.find({}).sort({ createdAt: -1 });
     return NextResponse.json({ success: true, data: questions });
   } catch (error) {
-    return NextResponse.json({ success: false, message: error.message });
+    return NextResponse.json(
+      { success: false, message: error.message },
+      { status: 500 }
+    );
   }
 }
