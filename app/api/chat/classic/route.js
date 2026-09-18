@@ -53,6 +53,13 @@ export async function POST(req) {
     await connectDB();
     const data = await Chat.findOne({ userId, _id: chatId });
 
+    if (!data) {
+      return NextResponse.json(
+        { success: false, message: "Chat not found" },
+        { status: 404 }
+      );
+    }
+
     //Create a user message object
     const userPrompt = {
       role: "user",
