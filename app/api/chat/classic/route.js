@@ -99,6 +99,10 @@ export async function POST(req) {
 
     data.messages.push(userPrompt);
 
+    const recentMessages = data.messages
+      .slice(-7, -1)
+      .map(({ role, content }) => ({ role, content }));
+
     let docContext = "";
 
     const embedding = await openai.embeddings.create({
@@ -134,15 +138,17 @@ export async function POST(req) {
               START CONTEXT
               ${docContext}
               END CONTEXT
-              --------------------
-              QUESTION: ${prompt}
               --------------------`,
     };
 
     //Call the OpenAI API to get a chat completion
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
-      messages: [systemMessage, { role: "user", content: prompt }],
+      messages: [
+        systemMessage,
+        ...recentMessages,
+        { role: "user", content: prompt },
+      ],
     });
 
     const message = completion.choices[0].message;
