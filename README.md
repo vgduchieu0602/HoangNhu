@@ -42,7 +42,11 @@ OPENAI_API_KEY=your_openai_api_key
 ASTRA_DB_NAMESPACE=your_namespace_astra_db
 ASTRA_DB_APPLICATION_TOKEN=your_astra_db_token
 ASTRA_DB_COLLECTION=your_astra_db_collection
-ASTRA_DB_APPLICATION_TOKEN=your_astra_application_token
+ASTRA_DB_API_ENDPOINT=your_astra_db_api_endpoint
+
+# Knowledge Base Ingestion
+# Use an approved Hoang Nhu source URL; this value is stored with every chunk.
+KNOWLEDGE_BASE_SOURCE_URL=https://your-approved-hoang-nhu-source/
 ```
 
 ## Development
