@@ -26,11 +26,19 @@ const db = client.db(ASTRA_DB_API_ENDPOINT, {
 });
 
 export async function POST(req) {
+  let stage = "validation";
+  let userId;
+  let chatId;
+
   try {
     let body;
     try {
       body = await req.json();
     } catch (error) {
+      console.warn("Classic chat request rejected", {
+        stage,
+        reason: "Invalid JSON body",
+      });
       return NextResponse.json(
         { success: false, message: "Invalid request" },
         { status: 400 }
@@ -38,15 +46,24 @@ export async function POST(req) {
     }
 
     if (!body || typeof body !== "object" || Array.isArray(body)) {
+      console.warn("Classic chat request rejected", {
+        stage,
+        reason: "Invalid request body",
+      });
       return NextResponse.json(
         { success: false, message: "Invalid request" },
         { status: 400 }
       );
     }
 
-    const { userId } = getAuth(req);
+    stage = "authentication";
+    userId = getAuth(req).userId;
 
     if (!userId) {
+      console.warn("Classic chat request rejected", {
+        stage,
+        reason: "User not authenticated",
+      });
       return NextResponse.json(
         {
           success: false,
@@ -57,7 +74,11 @@ export async function POST(req) {
     }
     // Nếu có content (từ suggested-questions), lưu vào DB
     if (body.content) {
-      await connectDB();
+      stage = "mongodb";
+      const mongoConnection = await connectDB();
+      if (!mongoConnection) {
+        throw new Error("MongoDB connection unavailable");
+      }
       const newQuestion = await SuggestedQuestion.create({
         content: body.content,
       });
@@ -65,7 +86,8 @@ export async function POST(req) {
     }
 
     //Extract chatId and prompt from the request body
-    const { chatId, prompt } = body;
+    chatId = body.chatId;
+    const { prompt } = body;
 
     if (
       typeof chatId !== "string" ||
@@ -73,6 +95,11 @@ export async function POST(req) {
       typeof prompt !== "string" ||
       !prompt.trim()
     ) {
+      stage = "validation";
+      console.warn("Classic chat request rejected", {
+        stage,
+        reason: "Invalid chatId or prompt",
+      });
       return NextResponse.json(
         { success: false, message: "Invalid request" },
         { status: 400 }
@@ -80,10 +107,20 @@ export async function POST(req) {
     }
 
     //Find the chat document in the database based on userId and chatId
-    await connectDB();
+    stage = "mongodb";
+    const mongoConnection = await connectDB();
+    if (!mongoConnection) {
+      throw new Error("MongoDB connection unavailable");
+    }
     const data = await Chat.findOne({ userId, _id: chatId });
 
     if (!data) {
+      console.warn("Classic chat request rejected", {
+        stage,
+        userId,
+        chatId,
+        reason: "Chat not found",
+      });
       return NextResponse.json(
         { success: false, message: "Chat not found" },
         { status: 404 }
@@ -105,28 +142,25 @@ export async function POST(req) {
 
     let docContext = "";
 
+    stage = "embedding";
     const embedding = await openai.embeddings.create({
       model: "text-embedding-3-small",
       input: prompt,
       encoding_format: "float",
     });
 
-    try {
-      const collection = await db.collection(ASTRA_DB_COLLECTION);
-      const cursor = collection.find(null, {
-        sort: {
-          $vector: embedding.data[0].embedding,
-        },
-        limit: 10,
-      });
+    stage = "astra retrieval";
+    const collection = await db.collection(ASTRA_DB_COLLECTION);
+    const cursor = collection.find(null, {
+      sort: {
+        $vector: embedding.data[0].embedding,
+      },
+      limit: 10,
+    });
 
-      const documents = await cursor.toArray();
-      const docsMap = documents?.map((doc) => doc.text);
-      docContext = JSON.stringify(docsMap);
-    } catch (error) {
-      console.log("Error querying db...");
-      docContext = "";
-    }
+    const documents = await cursor.toArray();
+    const docsMap = documents?.map((doc) => doc.text);
+    docContext = JSON.stringify(docsMap);
 
     const systemMessage = {
       role: "system",
@@ -142,6 +176,7 @@ export async function POST(req) {
     };
 
     //Call the OpenAI API to get a chat completion
+    stage = "llm completion";
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
@@ -154,27 +189,29 @@ export async function POST(req) {
     const message = completion.choices[0].message;
 
     if (!message) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Invalid API response",
-        },
-        { status: 500 }
-      );
+      throw new Error("LLM completion returned no message");
     }
 
     message.timestamps = Date.now();
     data.messages.push(message);
+    stage = "mongodb";
     await data.save();
 
     return NextResponse.json({ success: true, data: message });
   } catch (error) {
-    console.error("Error in chat route:", error);
+    console.error("Classic chat request failed", {
+      stage,
+      userId,
+      chatId,
+      error:
+        error instanceof Error
+          ? { name: error.name, message: error.message, stack: error.stack }
+          : error,
+    });
     return NextResponse.json(
       {
         success: false,
-        error:
-          error instanceof Error ? error.message : "An unknown error occurred",
+        error: "Unable to process chat request",
       },
       { status: 500 }
     );
@@ -183,12 +220,22 @@ export async function POST(req) {
 
 export async function GET(req) {
   try {
-    await connectDB();
+    const mongoConnection = await connectDB();
+    if (!mongoConnection) {
+      throw new Error("MongoDB connection unavailable");
+    }
     const questions = await SuggestedQuestion.find({}).sort({ createdAt: -1 });
     return NextResponse.json({ success: true, data: questions });
   } catch (error) {
+    console.error("Classic chat suggested questions failed", {
+      stage: "mongodb",
+      error:
+        error instanceof Error
+          ? { name: error.name, message: error.message, stack: error.stack }
+          : error,
+    });
     return NextResponse.json(
-      { success: false, message: error.message },
+      { success: false, message: "Unable to load suggested questions" },
       { status: 500 }
     );
   }
