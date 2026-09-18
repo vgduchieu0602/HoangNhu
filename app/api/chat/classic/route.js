@@ -69,7 +69,7 @@ export async function POST(req) {
 
     if (
       typeof chatId !== "string" ||
-      !/^[a-fA-F0-9]{24}$/.test(chatId) ||
+      !chatId ||
       typeof prompt !== "string" ||
       !prompt.trim()
     ) {
