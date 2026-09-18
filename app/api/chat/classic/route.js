@@ -25,6 +25,11 @@ const db = client.db(ASTRA_DB_API_ENDPOINT, {
   namespace: ASTRA_DB_NAMESPACE,
 });
 
+const EXTERNAL_TIMEOUT_MS = 15_000;
+
+const isTimeoutError = (error) =>
+  error instanceof Error && error.name.includes("Timeout");
+
 export async function POST(req) {
   let stage = "validation";
   let userId;
@@ -147,10 +152,12 @@ export async function POST(req) {
       model: "text-embedding-3-small",
       input: prompt,
       encoding_format: "float",
-    });
+    }, { timeout: EXTERNAL_TIMEOUT_MS, maxRetries: 0 });
 
     stage = "astra retrieval";
-    const collection = await db.collection(ASTRA_DB_COLLECTION);
+    const collection = await db.collection(ASTRA_DB_COLLECTION, {
+      defaultMaxTimeMS: EXTERNAL_TIMEOUT_MS,
+    });
     const cursor = collection.find(null, {
       sort: {
         $vector: embedding.data[0].embedding,
@@ -184,7 +191,7 @@ export async function POST(req) {
         ...recentMessages,
         { role: "user", content: prompt },
       ],
-    });
+    }, { timeout: EXTERNAL_TIMEOUT_MS, maxRetries: 0 });
 
     const message = completion.choices[0].message;
 
@@ -199,10 +206,12 @@ export async function POST(req) {
 
     return NextResponse.json({ success: true, data: message });
   } catch (error) {
+    const isTimeout = isTimeoutError(error);
     console.error("Classic chat request failed", {
       stage,
       userId,
       chatId,
+      timeout: isTimeout,
       error:
         error instanceof Error
           ? { name: error.name, message: error.message, stack: error.stack }
@@ -211,9 +220,11 @@ export async function POST(req) {
     return NextResponse.json(
       {
         success: false,
-        error: "Unable to process chat request",
+        error: isTimeout
+          ? "External service timed out"
+          : "Unable to process chat request",
       },
-      { status: 500 }
+      { status: isTimeout ? 504 : 500 }
     );
   }
 }
