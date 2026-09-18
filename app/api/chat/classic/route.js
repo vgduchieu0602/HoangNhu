@@ -30,10 +30,24 @@ const EXTERNAL_TIMEOUT_MS = 15_000;
 const isTimeoutError = (error) =>
   error instanceof Error && error.name.includes("Timeout");
 
+const anonymizeUserId = (userId) =>
+  typeof userId === "string" ? `${userId.slice(0, 6)}...` : undefined;
+
 export async function POST(req) {
   let stage = "validation";
   let userId;
   let chatId;
+  const requestId = crypto.randomUUID();
+  const requestStartedAt = Date.now();
+  const requestContext = () => ({
+    requestId,
+    chatId,
+    userId: anonymizeUserId(userId),
+    stage,
+    durationMs: Date.now() - requestStartedAt,
+  });
+
+  console.info("Classic chat request received", requestContext());
 
   try {
     let body;
@@ -41,7 +55,7 @@ export async function POST(req) {
       body = await req.json();
     } catch (error) {
       console.warn("Classic chat request rejected", {
-        stage,
+        ...requestContext(),
         reason: "Invalid JSON body",
       });
       return NextResponse.json(
@@ -52,7 +66,7 @@ export async function POST(req) {
 
     if (!body || typeof body !== "object" || Array.isArray(body)) {
       console.warn("Classic chat request rejected", {
-        stage,
+        ...requestContext(),
         reason: "Invalid request body",
       });
       return NextResponse.json(
@@ -62,11 +76,12 @@ export async function POST(req) {
     }
 
     stage = "authentication";
+    const authenticationStartedAt = Date.now();
     userId = getAuth(req).userId;
 
     if (!userId) {
       console.warn("Classic chat request rejected", {
-        stage,
+        ...requestContext(),
         reason: "User not authenticated",
       });
       return NextResponse.json(
@@ -77,6 +92,11 @@ export async function POST(req) {
         { status: 401 }
       );
     }
+
+    console.info("Classic chat authentication completed", {
+      ...requestContext(),
+      stageDurationMs: Date.now() - authenticationStartedAt,
+    });
     // Nếu có content (từ suggested-questions), lưu vào DB
     if (body.content) {
       stage = "mongodb";
@@ -102,7 +122,7 @@ export async function POST(req) {
     ) {
       stage = "validation";
       console.warn("Classic chat request rejected", {
-        stage,
+        ...requestContext(),
         reason: "Invalid chatId or prompt",
       });
       return NextResponse.json(
@@ -113,17 +133,23 @@ export async function POST(req) {
 
     //Find the chat document in the database based on userId and chatId
     stage = "mongodb";
+    const mongoLookupStartedAt = Date.now();
     const mongoConnection = await connectDB();
     if (!mongoConnection) {
       throw new Error("MongoDB connection unavailable");
     }
     const data = await Chat.findOne({ userId, _id: chatId });
 
+    console.info("Classic chat lookup completed", {
+      ...requestContext(),
+      provider: "mongodb",
+      stageDurationMs: Date.now() - mongoLookupStartedAt,
+      chatFound: Boolean(data),
+    });
+
     if (!data) {
       console.warn("Classic chat request rejected", {
-        stage,
-        userId,
-        chatId,
+        ...requestContext(),
         reason: "Chat not found",
       });
       return NextResponse.json(
@@ -148,13 +174,22 @@ export async function POST(req) {
     let docContext = "";
 
     stage = "embedding";
+    const embeddingStartedAt = Date.now();
     const embedding = await openai.embeddings.create({
       model: "text-embedding-3-small",
       input: prompt,
       encoding_format: "float",
     }, { timeout: EXTERNAL_TIMEOUT_MS, maxRetries: 0 });
 
+    console.info("Classic chat embedding completed", {
+      ...requestContext(),
+      provider: "openai",
+      model: "text-embedding-3-small",
+      stageDurationMs: Date.now() - embeddingStartedAt,
+    });
+
     stage = "astra retrieval";
+    const retrievalStartedAt = Date.now();
     const collection = await db.collection(ASTRA_DB_COLLECTION, {
       defaultMaxTimeMS: EXTERNAL_TIMEOUT_MS,
     });
@@ -168,6 +203,13 @@ export async function POST(req) {
     const documents = await cursor.toArray();
     const docsMap = documents?.map((doc) => doc.text);
     docContext = JSON.stringify(docsMap);
+
+    console.info("Classic chat vector retrieval completed", {
+      ...requestContext(),
+      provider: "astra",
+      retrievedDocumentCount: documents.length,
+      stageDurationMs: Date.now() - retrievalStartedAt,
+    });
 
     const systemMessage = {
       role: "system",
@@ -184,6 +226,7 @@ export async function POST(req) {
 
     //Call the OpenAI API to get a chat completion
     stage = "llm completion";
+    const completionStartedAt = Date.now();
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
@@ -199,18 +242,35 @@ export async function POST(req) {
       throw new Error("LLM completion returned no message");
     }
 
+    console.info("Classic chat llm completion completed", {
+      ...requestContext(),
+      provider: "openai",
+      model: "gpt-4",
+      stageDurationMs: Date.now() - completionStartedAt,
+    });
+
     message.timestamps = Date.now();
     data.messages.push(message);
     stage = "mongodb";
+    const saveStartedAt = Date.now();
     await data.save();
+
+    console.info("Classic chat conversation saved", {
+      ...requestContext(),
+      provider: "mongodb",
+      stageDurationMs: Date.now() - saveStartedAt,
+    });
+
+    console.info("Classic chat response sent", {
+      ...requestContext(),
+      status: 200,
+    });
 
     return NextResponse.json({ success: true, data: message });
   } catch (error) {
     const isTimeout = isTimeoutError(error);
     console.error("Classic chat request failed", {
-      stage,
-      userId,
-      chatId,
+      ...requestContext(),
       timeout: isTimeout,
       error:
         error instanceof Error
